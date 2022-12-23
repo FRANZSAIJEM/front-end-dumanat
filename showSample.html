@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lobster&family=Raleway:wght@200&family=Secular+One&display=swap" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="leftContent">
+                <label for="">Sample Name:</label> <br>
+                <input type="text" name="" id="sample"> 
+                <br>
+        
+                <label for="">Format:</label> <br>
+                <input type="text" name="" id="format">
+                <br>
+                <label for="">Size:</label> <br>
+                <input type="number" name="" id="size">
+                <br>
+                <button class="btn btn-success" id="confirm_update_lendee">Update</button>
+                <button class="btn btn-success" id="confirm_delete_lendee">Delete</button>
+
+                
+            </div>
+        </div>
+    </div>
+   
+</body>
+<script>
+    function getSamples(id) {
+        fetch('http://localhost:8000/api/samples/' + id)
+          .then(response=>{
+            if(response.status==200) {
+              response.json()
+                .then(data=>renderSample(data))
+            }
+          })
+      }
+
+      $(document).ready(()=>{
+        const urlParams = new URLSearchParams(window.location.search);
+        const param_id = urlParams.get('id');
+
+        getSamples(param_id)
+
+        $("#confirm_update_lendee").click(()=>{
+          const data = {
+            "name":$("#sample").val(),
+            "format":$("#format").val(),
+            "size":$("#size").val(),
+
+          }
+          fetch('http://localhost:8000/api/samples/' + param_id,{
+            credentials: "omit",
+            method:"PUT",
+            body: JSON.stringify(data),
+            headers : {
+              "Accept":"application/json",
+              "Content-Type":"application/json"
+            }
+          }).then(response=>{
+            if(response.status==200) {
+              window.location='samples.html'
+            }
+          })
+        })
+
+        $("#confirm_delete_lendee").click(()=>{
+          fetch('http://localhost:8000/api/samples/' + param_id,{
+            credentials:"omit",
+            method: "DELETE",
+            headers: {
+              'Accept':'application/json'
+            }
+          }).then(response=>{
+            if(response.status==200) {
+              window.location='samples.html'
+              alert("Deleting clip, click 'OK' to proceed")
+            }
+            if(response.status==500) {
+              alert("This Lendee has existing Book data")
+            }
+          })
+        })
+      })
+
+ </script>
+<style>
+    input{
+    background-color: rgb(0, 97, 65);
+    height: 50px;
+    width: 300px;
+    transition: 0.5s;
+    box-shadow: 20px 20px 20px 2px rgba(0, 0, 0, 0.468);
+  }
+  input:hover{
+    background-color: rgb(0, 166, 111);
+    height: 60px;
+    width: 400px;
+  }
+    .table{
+        color: white;
+    }
+   .leftContent{
+    text-align: center;
+    border-radius: 10px;
+    background-color: rgb(0, 65, 106);
+    padding: 15px;
+    box-shadow: 10px 10px 50px 2px rgba(0, 0, 0, 0.368);
+    
+   }
+    body{
+        background-color: rgb(8, 2, 32);
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
+    .container{
+        display: grid;
+        place-content: center;
+    }
+    .content{
+        margin: 100px;
+        padding: 50px;
+        font-size: 50px;
+    
+        width: 1500px;
+        background-color: rgb(0, 8, 81);
+        border-radius: 10px;
+    }
+</style>
+</html>
